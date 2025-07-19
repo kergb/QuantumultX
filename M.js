@@ -1,3 +1,36 @@
+// ==UserScript==
+// @name         Adblock4limbo Slim
+// @namespace    https://github.com/yourname/adblock4limbo-slim
+// @version      1.0
+// @description  Only remove ads (CSS + DOM), no UI buttons or enhancements.
+// @author       you
+// @match        *://*/*
+// ==/UserScript==
+
+(function () {
+  'use strict';
+
+  // 注入 CSS 隐藏广告
+  const css = `
+.ad, .ads, [id*="ad"], [class*="ad"], iframe, .video-ad, .videoAds {
+  display: none !important;
+}`;
+  const style = document.createElement('style');
+  style.textContent = css;
+  document.head.appendChild(style);
+
+  // JS 清理广告 DOM
+  const clean = () => {
+    document.querySelectorAll(
+      'iframe, .ads, .ad, [id*="ad"], [class*="ad"], .video-ad, .videoAds'
+    ).forEach(el => el.remove());
+  };
+
+  // 拦截 window.open 弹窗
+  window.open = () => {};
+  clean();
+  setInterval(clean, 1500);
+})();
 // 正则：匹配目标站点
 const TARGET_SITES_REGEX = /(missav|netflav|supjav|njav|javday)/i;
 const JAVBUS_REGEX = /javbus/i;
