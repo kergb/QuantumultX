@@ -1,6 +1,5 @@
 let url = $request.url;
 let body = $response.body;
-
 // === 1. 针对 i4.cn 应用市场广告过滤 ===
 if (url.includes("list-app-m.i4.cn")) {
     let i = JSON.parse(body);
