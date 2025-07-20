@@ -1,7 +1,7 @@
 //https://raw.githubusercontent.com/kergb/QuantumultX/refs/heads/main/Unknown%20Script.js
 // CSS and JS resources for ad removal
 const CSS_URL = "https://limbopro.com/CSS/Adblock4limbo.user.css";
-const JS_URL = "https://raw.githubusercontent.com/kergb/QuantumultX/refs/heads/main/Unknown%20Script.js
+const JS_URL = "https://raw.githubusercontent.com/kergb/QuantumultX/refs/heads/main/Unknown%20Script.js";
 // CSS and JS resources for ad removal";
 
 // HTML injection strings
