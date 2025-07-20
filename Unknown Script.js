@@ -1,7 +1,3 @@
-window.addListener = () => {};
-window.addListenerById = () => {};
-window.setAttribute_after = () => {};
-
 var imax = {
   
     css: {
