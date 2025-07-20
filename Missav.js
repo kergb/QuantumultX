@@ -1,5 +1,7 @@
 // CSS and JS resources for ad removal
 const CSS_URL = "https://limbopro.com/CSS/Adblock4limbo.user.css";
+const JS_URL = "https://limbopro.com/Adguard/Adblock4limbo.user.js";
+
 // HTML injection strings
 const TITLE_INJECTION = `</title>
 <link rel="stylesheet" href="${CSS_URL}" type="text/css" />
