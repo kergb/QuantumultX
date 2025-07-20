@@ -1,1 +1,2 @@
-
+^https:\/\/missav\.(?:ai|ws)\/(?!(build|fonts|img|js|api|cdn-cgi)\/) url script-response-body https://raw.githubusercontent.com/kergb/QuantumultX/refs/heads/main/missav.js
+hostname = missav.com, missav.ws
