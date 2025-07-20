@@ -1,7 +1,7 @@
 
 // CSS and JS resources for ad removal
 const CSS_URL = "https://limbopro.com/CSS/Adblock4limbo.user.css";
-const JS_URL = "https://update.sleazyfork.org/scripts/524198/MissAV%20AdBlocker.user.js";
+const JS_URL = "https://update.greasyfork.org/scripts/453300/Miss%20Player%20%7C%20%E5%BD%B1%E9%99%A2%E6%A8%A1%E5%BC%8F%20%28%E5%8D%95%E6%89%8B%E6%92%AD%E6%94%BE%E5%99%A8%29.user.js";
 
 // HTML injection strings
 const TITLE_INJECTION = `</title>
