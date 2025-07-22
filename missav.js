@@ -1,6 +1,6 @@
 // CSS and JS resources for ad removal
 const CSS_URL = "https://limbopro.com/CSS/Adblock4limbo.user.css";
-const JS_URL = "https://update.sleazyfork.org/scripts/488770/missav修改页面.user.js";
+const JS_URL = "https://raw.githubusercontent.com/kergb/QuantumultX/refs/heads/main/My.js";
 
 // HTML injection strings
 const TITLE_INJECTION = `&lt;/title&gt;
