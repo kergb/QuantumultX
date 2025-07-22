@@ -1,0 +1,61 @@
+// Quantumult X 脚本：missav_adblock.js
+// 功能：移除广告 + 阻止跳转 + 防暂停
+
+let body = $response.body;
+
+// 注入脚本逻辑：移除广告元素 + 覆盖 window.open 和 visibility API
+const injectionScript = `
+<script>
+(function () {
+  'use strict';
+  // 1. 删除广告元素
+  const removeAds = () => {
+    const selectors = [
+      "a[href^='https://theporndude.com']",
+      "a[href*='mycomic']",
+      "a[href*='myavlive']",
+      "[href*='bit.ly']",
+      "[href*='bit.ly'][target=_blank]",
+      "a[href*='/vip']",
+      "img[src*='.gif']",
+      "iframe",
+      "#a[href*='//bit.ly/']",
+      "div[style*='z-index: 1001']",
+      "ul.space-y-2.mb-4.ml-4.list-disc.text-nord14",
+      "div.space-y-5.mb-5",
+      "div.under_player",
+      "div[style='width: 300px; height: 250px;']"
+    ];
+    for (const selector of selectors) {
+      document.querySelectorAll(selector).forEach(el => el.remove());
+    }
+  };
+
+  // 初始化观察器
+  const observer = new MutationObserver(removeAds);
+  observer.observe(document.documentElement, { childList: true, subtree: true });
+  removeAds();
+
+  // 2. 禁用 window.open
+  Object.defineProperty(window, 'open', {
+    value: () => null,
+    writable: false
+  });
+
+  // 3. 防暂停：强制页面始终为可见
+  const fakeVisibility = () => {
+    Object.defineProperty(document, 'hidden', { value: false, configurable: true });
+    Object.defineProperty(document, 'visibilityState', { value: 'visible', configurable: true });
+    document.dispatchEvent(new Event('visibilitychange'));
+  };
+
+  document.addEventListener('visibilitychange', fakeVisibility, true);
+  fakeVisibility();
+})();
+</script>
+`;
+
+// 在 </body> 标签前插入脚本
+body = body.replace('</body>', `${injectionScript}</body>`);
+
+$done({ body });
