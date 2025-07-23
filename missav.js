@@ -1,3 +1,4 @@
+//禁missav跳转其他窗口，禁失焦播放去除广告
 let body = $response.body;
 
 const injectedScript = `
