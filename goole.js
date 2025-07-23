@@ -1,35 +1,4 @@
-/********************************
-Google搜索人机验证解决方案
-搜索内容时遇到人机验证立即并发使用多个代理策略、策略组尝试搜索内容，并返回最优结果。
-
-脚本作者：@NobyDa
-更新时间：2024/05/19
-平台兼容：Surge(iOS4.9.3+/macOS4.2.3+) / QuantumultX(1.0.26+) / Loon(3.1.9[694]+)
-
-可在 BoxJs(低优先级)、Surge模块参数、Loon插件参数中填写筛选的代理策略、策略组的正则表达式。
-所有代理策略、策略组至多筛选、使用20个，可在BoxJs中测试匹配的策略，不筛选则表示随机使用。
-
-注意：Surge由于策略架构问题，正则表达式筛选的"代理策略"不包含"外部代理策略"；
-QuantumultX、Loon则无此限制，正则表达式可筛选所有"策略组"内的"代理策略"。
-
-*********************************
-Surge(iOS 5.9.0+/macOS 5.5.0+) 模块：
-https://raw.githubusercontent.com/NobyDa/Script/master/Surge/Module/GoogleCAPTCHA.sgmodule
-
-*********************************
-QuantumultX(1.0.26+) 重写资源引用：
-https://raw.githubusercontent.com/NobyDa/Script/master/QuantumultX/Snippet/GoogleCAPTCHA.snippet
-
-*********************************
-Loon(3.1.9[694]+) 插件：
-https://raw.githubusercontent.com/NobyDa/Script/master/Loon/Loon_Google_CAPTCHA.plugin
-
-*********************************
-BoxJs 订阅地址：
-https://raw.githubusercontent.com/NobyDa/Script/master/NobyDa_BoxJs.json
-
-*********************************/
-
+// Google搜索人机验证解决方案, 搜索内容时遇到人机验证立即并发使用多个代理策略、策略组尝试搜索内容，并返回最优结果。
 const $ = new NobyDa_Tools();
 $.ret = {};
 
