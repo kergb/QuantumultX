@@ -1,3 +1,4 @@
+//防止百度跳转
 const method = $request.method;
 const statusCode = $response.statusCode;
 const url = $request.url;
