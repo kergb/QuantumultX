@@ -1,8 +1,63 @@
-if (!/html>/.test($response.body)) $done({});
+===========================
+//if (!/html>/.test($response.body)) $done({});
 // 去顶部域名,底部下载提醒,播放页广告
 const body = $response.body.replace(
   /<\/head>/,
   "<style> .sub-header, .app-desktop-banner, .moj-content {display:none!important;} </style> \n </head>"
 );
 
+$done({ body });//
+====================================
+
+// JavDB
+  case /^https:\/\/api\.hechuangxinxi\.xyz\/api\/v\d\/\w+/.test(url):
+    try {
+      let obj = JSON.parse(body);
+      if (url.includes("/api/v1/ads")) {
+        // 首页banner
+        if (obj?.data?.ads?.index_top?.length &gt; 0) {
+          // 黑名单 移除http外链
+          obj.data.ads.index_top = obj.data.ads.index_top.filter((i) =&gt; !/https?:\/\//.test(i?.url));
+        }
+        if (obj?.data?.ads?.web_magnets_top?.length &gt; 0) {
+          // 黑名单 移除http外链
+          obj.data.ads.web_magnets_top = obj.data.ads.web_magnets_top.filter((i) =&gt; !/https?:\/\//.test(i?.url));
+        }
+      } else if (url.includes("/api/v1/startup")) {
+        // 开屏广告
+        delete obj.data.settings.NOTICE; // 首次进入的提示
+        if (obj?.data?.splash_ad) {
+          obj.data.splash_ad.enabled = false;
+          obj.data.splash_ad.overtime = 0;
+        }
+        if (obj?.data?.feedback) {
+          obj.data.feedback = {};
+        }
+        if (obj?.data?.user) {
+          // obj.data.user.vip_expired_at = "2090-12-31T23:59:59.000+08:00";
+          // obj.data.user.is_vip = true;
+        }
+      } else if (url.includes("/api/v1/users")) {
+        // 伪装会员
+        if (obj?.data?.user) {
+          // obj.data.user.vip_expired_at = "2090-12-31T23:59:59.000+08:00";
+          // obj.data.user.is_vip = true;
+        }
+      } else if (url.includes("/api/v4/movies/")) {
+        // 详情页banner
+        if (obj?.data?.show_vip_banner) {
+          obj.data.show_vip_banner = false;
+        }
+      } else {
+        $done({});
+      }
+      body = JSON.stringify(obj);
+    } catch (err) {
+      console.log(`JavDB, 出现异常: ` + err);
+    }
+    break;
+  default:
+    $done({});
+}
 $done({ body });
+
