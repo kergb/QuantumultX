@@ -31,6 +31,23 @@ const itemMenusConfig = {
   mblog_menus_video_feedback: false, // 播放反馈
   mblog_menus_video_later: false // 可能是稍后再看
 };
+if (url.includes("/2/flowpage")) {
+  // 清空顶部横幅
+  if (typeof obj.pageHeader !== "undefined") {
+    obj.pageHeader = {};
+  }
+
+  // 删除热搜广告项（包含 promotion 和 c_type:51）
+  if (Array.isArray(obj.items)) {
+    for (let item of obj.items) {
+      if (Array.isArray(item.items)) {
+        item.items = item.items.filter(group => {
+          return !group.data?.promotion && !group.data?.itemid?.includes("c_type:51");
+        });
+      }
+    }
+  }
+}
 
 if (url.includes("/interface/sdk/sdkad.php")) {
   // 开屏广告
