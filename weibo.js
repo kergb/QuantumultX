@@ -2,6 +2,7 @@ const url = $request.url;
 if (!$response) $done({});
 if (!$response.body) $done({});
 let body = $response.body;
+
 // 微博详情页菜单配置
 const itemMenusConfig = {
   creatortypeask: false, // 转发任务
@@ -31,6 +32,7 @@ const itemMenusConfig = {
   mblog_menus_video_feedback: false, // 播放反馈
   mblog_menus_video_later: false // 可能是稍后再看
 };
+
 if (url.includes("/interface/sdk/sdkad.php")) {
   // 开屏广告
   let obj = JSON.parse(body.substring(0, body.length - 2));
@@ -117,7 +119,7 @@ if (url.includes("/interface/sdk/sdkad.php")) {
     if (obj?.elements?.length > 0) {
       obj.elements = obj.elements.filter((i) => ["写微博", "图片", "视频"]?.includes(i?.app_name));
     }
-  } else if (url.includes("/2/comments/build_comments") || url.includes("/2/statuses/container_detail_comment")) {
+  } else if (url.includes("/2/comments/build_comments")) {
     // 评论区
     if (obj?.datas?.length > 0) {
       let newItems = [];
@@ -990,6 +992,59 @@ if (url.includes("/interface/sdk/sdkad.php")) {
     if (obj?.items?.length > 0) {
       // 1007 可能感兴趣的话题
       obj.items = obj.items.filter((i) => i?.data?.card_type !== 1007);
+    }
+  } else if (url.includes("/2/statuses/container_detail?")) {
+    // 新版 微博详情页
+    if (obj?.pageHeader?.data?.items?.length > 0) {
+      let newItems = [];
+      for (let item of obj.pageHeader.data.items) {
+        if (item?.data?.card_type === 236 && item?.category === "wboxcard") {
+          // 底部横版广告
+          continue;
+        } else {
+          newItems.push(item);
+        }
+      }
+      obj.pageHeader.data.items = newItems;
+    }
+    if (obj?.detailInfo?.status?.reward_info) {
+      // 赞赏信息
+      delete obj.detailInfo.status.reward_info;
+    }
+  } else if (url.includes("/2/statuses/container_detail_comment")) {
+    // 新版 微博评论区
+    if (obj?.items?.length > 0) {
+      let newItems = [];
+      for (let item of obj.items) {
+        if (item?.data) {
+          if (!isAd(item?.data)) {
+            if (item?.data?.comment_bubble) {
+              delete item.data.comment_bubble; // 评论气泡
+            }
+            if (item?.data?.comment_bullet_screens_message) {
+              delete item.data.comment_bullet_screens_message; // 评论弹幕
+            }
+            if (item?.data?.hot_icon) {
+              delete item.data.hot_icon; // 热评小图标 弹幕 首评
+            }
+            if (item?.data?.vip_button) {
+              delete item.data.vip_button; // 会员气泡按钮
+            }
+            // 微博伪装评论
+            if (item?.data?.user) {
+              removeAvatar(item?.data); // 头像挂件,关注按钮
+              if (/(超话社区|微博)/.test(item?.data?.user?.name)) {
+                continue;
+              }
+            }
+            if (["广告", "荐读", "评论总结", "推荐", "相关内容", "相关评论"]?.includes(item?.data?.adType)) {
+              continue;
+            }
+            newItems.push(item);
+          }
+        }
+      }
+      obj.items = newItems;
     }
   } else if (url.includes("/2/statuses/container_timeline_hot") || url.includes("/2/statuses/unread_hot_timeline")) {
     // 首页推荐tab信息流
