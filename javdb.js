@@ -1,4 +1,5 @@
 if (!/html>/.test($response.body)) $done({});
+
 // 去顶部域名,底部下载提醒,播放页广告
 const body = $response.body.replace(
   /<\/head>/,
