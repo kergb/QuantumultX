@@ -1,4 +1,3 @@
-//  闲鱼首页：去除顶部标签、banner图、广告 sections、部分模块
 let url = $request.url;
 let body = $response.body;
 let obj = JSON.parse(body);
@@ -40,8 +39,8 @@ if (url.includes("/gw/mtop.taobao.idlemtopsearch.search.shade") || url.includes(
 }
 
 if (url.includes("/mtop.idle.user.page.my.adapter")) {
-  //  "3": tips动态提醒横幅；"6": 底部图标菜单；"5": 简历认证等小菜单；"4":回收横幅广告
-  const indexArr = ["3", "6"];
+  //  "2": tips横幅 "3": 我买到的；"6"、"8": 底部图标菜单；"5": 简历认证等小菜单；"4":回收横幅广告
+  const indexArr = ["2", "6", "8"];
   obj.data.container.sections = obj.data.container.sections.filter(item => !indexArr.includes(item.index));
 
   //  "4"索引有多个元素，包含正常内容，需要特殊判断
@@ -56,12 +55,17 @@ if (url.includes("/mtop.idle.user.page.my.adapter")) {
     if (section.index === "1") {
         delete section.item.level;
     }
+    if (section.index === "4") {
+      if (section?.item?.shopTips !== undefined) {
+       section.item.shopTips = {};
+      }
+    }
   });
   
   //  处理简历菜单item.tool.exContent.tools[]:13：我的帖子；1：安全中心；2：闲鱼体验官；20：闲鱼公约；34：宝贝上首页；14：借钱；11：淘宝转卖；26：简历认证
   //obj.data.container.sections = obj.data.container.sections.filter(item => item.index !== "5");
   obj.data.container.sections.forEach(section => {
-    if (section.index === "5") {
+    if (section.index === "7") {
       //section.item.tool.exContent.tools = section.item.tool.exContent.tools.filter(item => tools.includes(item.exContent.toolId));
 
       // 定义要筛选的 toolId 列表
@@ -123,10 +127,19 @@ if (url.includes("/gw/mtop.taobao.idlemtopsearch.search")) {
           return true;  
       }); 
       
-      obj.data.resultList = obj.data.resultList.filter(element => {  
-        return element.data.template.name !== "idlefish_search_card_category_select";
-      }); 
-  }  
+      //obj.data.resultList = obj.data.resultList.filter(element => {  
+        //return element.data.template.name !== "idlefish_search_card_category_select";
+      //});
+      
+      const excludeNames = ["idlefish_search_card_category_select", "idlefish_search_spu_market_publish"];
+      obj.data.resultList = obj.data.resultList.filter(element => {
+        return !excludeNames.includes(element.data.template.name);
+      });
+    }
+    
+    if (obj.data?.resultPrefixBar) {
+      delete obj.data.resultPrefixBar;
+    }
 }
 
 
