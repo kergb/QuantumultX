@@ -39,8 +39,8 @@ if (url.includes("/gw/mtop.taobao.idlemtopsearch.search.shade") || url.includes(
 }
 
 if (url.includes("/mtop.idle.user.page.my.adapter")) {
-  //  "2": tips横幅 "3": 我买到的；"6"、"8": 底部图标菜单；"5": 简历认证等小菜单；"4":回收横幅广告
-  const indexArr = ["2", "6", "8"];
+  //  "2": tips横幅 "3": 我买到的；"6"、"8": 底部图标菜单；"5": 横幅；"4":回收横幅广告
+  const indexArr = ["2", "5", "6", "8"];
   obj.data.container.sections = obj.data.container.sections.filter(item => !indexArr.includes(item.index));
 
   //  "4"索引有多个元素，包含正常内容，需要特殊判断
@@ -139,6 +139,10 @@ if (url.includes("/gw/mtop.taobao.idlemtopsearch.search")) {
     
     if (obj.data?.resultPrefixBar) {
       delete obj.data.resultPrefixBar;
+    }
+    
+    if (obj.data?.topList) {
+      obj.data.topList = [];
     }
 }
 
