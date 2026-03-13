@@ -17,6 +17,10 @@ if (url.includes("/gw/mtop.taobao.idlehome.home.nextfresh")) {
     obj.data.sections = obj.data.sections.filter(function(section) {  
       return !excludeNames.includes(section.template.name);  
     });
+    
+    obj.data.sections = obj.data.sections.filter(section => {
+      return (section.data && (section.data.cardTypeValue === "Item"));
+    });
   }
   // 首页新的顶部图标菜单
   obj.data.homeTopList = [];
@@ -39,8 +43,8 @@ if (url.includes("/gw/mtop.taobao.idlemtopsearch.search.shade") || url.includes(
 }
 
 if (url.includes("/mtop.idle.user.page.my.adapter")) {
-  //  "0": 会员等级信息; "2": tips横幅; "3": 我买到的; "6"、"8": 底部图标菜单; "5": 横幅; "4":回收横幅广告->底部图标菜单了（2026-01-19）
-  const indexArr = ["2", "4", "5", "6", "8"];
+  //  "0": 会员等级信息; "1": 我买到的; "2": tips横幅; "3": 回收; "6"、"8": 底部图标菜单; "5": 横幅; "4":回收横幅广告->底部图标菜单了（2026-01-19）
+  const indexArr = ["2", "3", "4", "5", "6", "8"];
   obj.data.container.sections = obj.data.container.sections.filter(item => !indexArr.includes(item.index));
 
   //  "4"索引有多个元素，包含正常内容，需要特殊判断
@@ -90,11 +94,25 @@ if (url.includes("/mtop.idle.user.page.my.adapter")) {
 
 
   //  处理闲鱼会员信息  data.container.sections[index:0]
-  // obj.data.container.sections.forEach(section => {
-  //   if (section.index === "0" && section.item?.level) {
-  //     delete section.item.level;
-  //   }
-  // });
+  obj.data.container.sections.forEach(section => {
+     if (section.index === "0" && section.item?.level) {
+       //  右边动画
+       section.item.level.exContent.bubble = "";
+       //  中间动画
+       section.item.level.exContent.image = "";
+       //  提示文字行
+       section.item.level.exContent.tips = "";
+       //  箭头图标
+       section.item.level.exContent.arrowUrl = "";
+       //  tag提示
+       section.item.level.exContent.tag = "";
+       //  轮播图标
+       section.item.level.exContent.swiper = [];
+     }
+     if (section.index === "0" && section.item?.tip) {
+       delete section.item.tip;
+     }
+  });
   
 }
 
