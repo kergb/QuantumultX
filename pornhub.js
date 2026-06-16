@@ -1,6 +1,5 @@
 let body = $response.body;
 
-// 1. CSS 隐藏层：屏蔽 banner 和已知的广告容器
 const adSelectors = [
   "#cookieBanner",
   ".ad-box",
@@ -30,38 +29,70 @@ const adSelectors = [
 
 const cssInjection = `
 <style>
-  ${adSelectors.join(", ")} {
-    border: none !important;
-    display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    min-height: 0 !important;
-    opacity: 0 !important;
-    overflow: hidden !important;
-    padding: 0 !important;
-    pointer-events: none !important;
-    position: absolute !important;
-    visibility: hidden !important;
-    width: 0 !important;
-  }
+${adSelectors.join(",")}{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  width:0 !important;
+  height:0 !important;
+  min-height:0 !important;
+  overflow:hidden !important;
+  margin:0 !important;
+  padding:0 !important;
+  pointer-events:none !important;
+}
 </style>`;
 
-// 2. JS 拦截层：深度劫持跳转逻辑
 const jsInjection = `
 <script>
-    (function() {
-        // 1. 变量屏蔽：在网页读取 TEXTLINKS 之前，将其锁定为 null 或空数组
-        Object.defineProperty(window, 'TEXTLINKS', {
-            get: function() { return []; },
-            set: function(val) { /* 忽略设置操作，使其无法被赋值 */ },
-            configurable: false
-        });
-    })();
+(function(){
+
+  try{
+    Object.defineProperty(window,'TEXTLINKS',{
+      get:function(){ return []; },
+      set:function(v){},
+      configurable:true
+    });
+  }catch(e){}
+
+  function removeAds(){
+    document.querySelectorAll(
+      '${adSelectors.join(",")}'
+    ).forEach(function(el){
+      el.remove();
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',removeAds);
+  }else{
+    removeAds();
+  }
+
+  new MutationObserver(function(){
+    removeAds();
+  }).observe(document.documentElement,{
+    childList:true,
+    subtree:true
+  });
+
+})();
 </script>`;
 
-// 3. 插入逻辑：将代码注入到 <head> 标签之后
-if (body && body.includes("<head")) {
-  body = body.replace(/(<head[^>]*>)/i, "$1" + cssInjection + jsInjection);
+/* 替换已知广告数据 */
+body = body.replace(
+  /var\\s+TEXTLINKS\\s*=\\s*\\[[\\s\\S]*?\\];/gi,
+  'var TEXTLINKS=[];'
+);
+
+/* 注入 */
+if (/<head[^>]*>/i.test(body)) {
+  body = body.replace(
+    /(<head[^>]*>)/i,
+    "$1" + cssInjection + jsInjection
+  );
+} else {
+  body = cssInjection + jsInjection + body;
 }
 
 $done({ body });
