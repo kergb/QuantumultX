@@ -8,13 +8,15 @@ if (!html) {
 const parser = new DOMParser();
 const doc = parser.parseFromString(html, "text/html");
 
+
 // ==========================
 // 第一部分：响应阶段 DOMParser 删除广告
 // ==========================
 
+
 // 删除广告 script
 
-doc.querySelectorAll("script").forEach(el =&gt; {
+doc.querySelectorAll("script").forEach(el => {
 
     let src = el.src || "";
     let text = el.textContent || "";
@@ -28,6 +30,7 @@ doc.querySelectorAll("script").forEach(el =&gt; {
     }
 
 });
+
 
 // 删除已有广告节点
 
@@ -50,38 +53,45 @@ const removeSelectors = [
 
     "div[style='width: 300px; height: 250px;']",
 
+
     // 原规则
     'div:has(a[href*="go.myavlive.com"])',
 
-    '.relative&gt;div[x-init*="campaignId=under_player"]',
+    '.relative>div[x-init*="campaignId=under_player"]',
 
     'div[x-show^="recommendItems"]~div[class]:has(a[rel^="sponsored"])'
 
 ];
 
-removeSelectors.forEach(sel =&gt; {
+
+removeSelectors.forEach(sel => {
 
     try {
 
         doc.querySelectorAll(sel)
-        .forEach(el =&gt; el.remove());
+        .forEach(el => el.remove());
 
     } catch(e){}
 
 });
+
+
+
 
 // ==========================
 // 第二部分：注入网页 JS
 // 处理动态广告
 // ==========================
 
+
 const injectedScript = `
 
-&lt;script&gt;
+<script>
 
 (function(){
 
 'use strict';
+
 
 // 动态广告选择器
 
@@ -99,31 +109,40 @@ const adSelectors = [
 
 "a[href*='/vip']",
 
+
 "div[style*='z-index: 1001']",
+
 
 "ul.space-y-2.mb-4.ml-4.list-disc.text-nord14",
 
+
 "div.space-y-5.mb-5",
+
 
 "div.under_player",
 
+
 "div[style='width: 300px; height: 250px;']",
 
+
 "div:has(a[href*='go.myavlive.com'])",
+
 
 ".relative:has(.under_player)"
 
 ];
 
+
+
 function cleanAds(){
 
-    adSelectors.forEach(selector=&gt;{
+    adSelectors.forEach(selector=>{
 
         try{
 
             document
             .querySelectorAll(selector)
-            .forEach(el=&gt;el.remove());
+            .forEach(el=>el.remove());
 
         }catch(e){}
 
@@ -131,13 +150,16 @@ function cleanAds(){
 
 }
 
+
+
 // 页面加载后清一次
 
 cleanAds();
 
+
 // 监听动态插入广告
 
-new MutationObserver(()=&gt;{
+new MutationObserver(()=>{
 
     cleanAds();
 
@@ -148,6 +170,8 @@ new MutationObserver(()=&gt;{
         subtree:true
     }
 );
+
+
 
 // ==========================
 // 禁止弹窗
@@ -165,31 +189,36 @@ configurable:true
 }
 );
 
+
 }catch(e){
 
 window.open=function(){};
 
 }
 
+
+
 })();
 
-&lt;/script&gt;
+</script>
 
 `;
+
 
 // 注入 head
 
 body = doc.documentElement.outerHTML;
 
 body = body.replace(
-/&lt;head&gt;/i,
-"&lt;head&gt;"+injectedScript
+/<head>/i,
+"<head>"+injectedScript
 );
+
 
 // 输出
 
 $done({
 
-body:"&lt;!DOCTYPE html&gt;"+body
+body:"<!DOCTYPE html>"+body
 
 });
