@@ -10,29 +10,11 @@ const doc = parser.parseFromString(html, "text/html");
 
 
 // ==========================
-// 静态广告清理
+// 静态清理
 // ==========================
 
 
-doc.querySelectorAll("script").forEach(el => {
-
-    let src = el.src || "";
-    let text = el.textContent || "";
-
-    if (
-        src.includes("tsyndicate.com") ||
-        text.includes("TSOutstreamVideo") ||
-        text.includes("htmlAds")
-    ) {
-        el.remove();
-    }
-
-});
-
-
-// 精准广告节点
-
-const removeSelectors = [
+const selectors = [
 
 "a[href^='https://theporndude.com']",
 
@@ -42,9 +24,19 @@ const removeSelectors = [
 
 "[href*='bit.ly']",
 
+"[href*='bit.ly'][target=_blank]",
+
 "a[href*='/vip']",
 
+"div[style*='z-index: 1001']",
+
+"ul.space-y-2.mb-4.ml-4.list-disc.text-nord14",
+
+"div.space-y-5.mb-5",
+
 "div.under_player",
+
+"div[style='width: 300px; height: 250px;']",
 
 "div:has(a[href*='go.myavlive.com'])",
 
@@ -55,14 +47,15 @@ const removeSelectors = [
 ];
 
 
-removeSelectors.forEach(sel=>{
 
-    try{
+selectors.forEach(sel=>{
 
-        doc.querySelectorAll(sel)
-        .forEach(el=>el.remove());
+try{
 
-    }catch(e){}
+doc.querySelectorAll(sel)
+.forEach(e=>e.remove());
+
+}catch(e){}
 
 });
 
@@ -70,62 +63,67 @@ removeSelectors.forEach(sel=>{
 
 
 // ==========================
-// 动态广告处理 JS
+// 注入动态清理
 // ==========================
 
 
-const injectedScript = `
+const js = `
 
 <script>
 
 (function(){
 
+
 "use strict";
 
 
-
-const selectors=[
-
-"a[href^='https://theporndude.com']",
-
-"a[href*='mycomic']",
-
-"a[href*='myavlive']",
-
-"[href*='bit.ly']",
-
-"a[href*='/vip']",
-
-"div.under_player",
-
-"div:has(a[href*='go.myavlive.com'])"
-
-];
+const selectors=${JSON.stringify(selectors)};
 
 
 
-let busy=false;
+let lock=false;
 
 
 
-function removeAds(root=document){
+function clean(root=document){
 
 
-if(busy)return;
+if(lock)return;
 
-busy=true;
+lock=true;
 
-
-selectors.forEach(selector=>{
 
 
 try{
 
 
-root.querySelectorAll(selector)
-.forEach(el=>{
+selectors.forEach(sel=>{
 
-    el.remove();
+
+try{
+
+
+// 扫描根节点
+
+if(root.matches && root.matches(sel)){
+
+root.remove();
+
+return;
+
+}
+
+
+// 扫描子节点
+
+root.querySelectorAll(sel)
+.forEach(e=>e.remove());
+
+
+
+}catch(e){}
+
+
 
 });
 
@@ -133,10 +131,8 @@ root.querySelectorAll(selector)
 }catch(e){}
 
 
-});
 
-
-busy=false;
+lock=false;
 
 
 }
@@ -144,18 +140,21 @@ busy=false;
 
 
 
-// 首次清理
+// 初始清理
 
-removeAds();
+setTimeout(clean,500);
 
-
-
-// 防止频繁触发
-
-let timer=null;
+setTimeout(clean,2000);
 
 
-const observer=new MutationObserver(records=>{
+
+// 监听动态广告
+
+
+let timer;
+
+
+const observer=new MutationObserver(()=>{
 
 
 clearTimeout(timer);
@@ -163,27 +162,9 @@ clearTimeout(timer);
 
 timer=setTimeout(()=>{
 
+clean();
 
-records.forEach(record=>{
-
-
-record.addedNodes.forEach(node=>{
-
-
-if(node.nodeType===1){
-
-    removeAds(node);
-
-}
-
-
-});
-
-
-});
-
-
-},1200);
+},800);
 
 
 
@@ -203,21 +184,11 @@ subtree:true
 
 // 禁止弹窗
 
+
 try{
 
 
 window.open=function(){};
-
-
-Object.defineProperty(
-window,
-"open",
-{
-value:function(){},
-writable:false,
-configurable:false
-}
-);
 
 
 }catch(e){}
@@ -233,14 +204,12 @@ configurable:false
 
 
 
-// 注入
-
-let body = doc.documentElement.outerHTML;
+let body=doc.documentElement.outerHTML;
 
 
 body=body.replace(
 /<head>/i,
-"<head>"+injectedScript
+"<head>"+js
 );
 
 
